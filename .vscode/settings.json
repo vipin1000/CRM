@@ -1,0 +1,16 @@
+{
+    "python.testing.promptToConfigure": true,
+    "editor.dropIntoEditor.preferences": [
+
+    ],
+    
+    
+    "editor.suggestOnTriggerCharacters": true,
+    "editor.acceptSuggestionOnEnter": "on",
+    "workbench.settings.enableNaturalLanguageSearch": true
+}
+
+
+
+    
+  
