@@ -37,7 +37,6 @@
 <p class="card-text">
 <strong>ID: </strong>{{ customer_record.id }}</p>
     
-    
   </div>
 </div>
 
@@ -45,8 +44,7 @@
 <a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
 
 <a href="{% url 'delete_record' customer_record.id %}" class="btn btn-danger">Delete</a>
-
-<a href="{% url 'update_record' customer_record.id %}" class="btn btn-secondary">Update Record</a>
-		
+<a href="{% url 'update_record' customer_record.id %}" class="btn btn-secondary">Update</a>
+ 
 
 {% endblock %}

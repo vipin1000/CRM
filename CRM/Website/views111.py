@@ -109,7 +109,7 @@ def login_user(request):
 
 
 
-
+###### home.html #########
 # <video id="webcam" width="320" height="240" autoplay></video>
 # <button id="capture">Capture Face</button>
 
