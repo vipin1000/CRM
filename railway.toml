@@ -8,10 +8,17 @@ healthcheckPath = "/"
 healthcheckTimeout = 100
 
 [phases.setup]
-nixPkgs = ["python3", "gcc", "mysql"]
+nixPkgs = ["python3", "gcc", "mysql", "pkg-config", "mysql80", "mysql80-dev"]
 
 [phases.install]
-cmds = ["python -m venv /opt/venv", ". /opt/venv/bin/activate", "pip install -r requirements.txt"]
+cmds = [
+    "apt-get update",
+    "apt-get install -y default-libmysqlclient-dev build-essential pkg-config",
+    "python -m venv /opt/venv",
+    ". /opt/venv/bin/activate",
+    "pip install --upgrade pip",
+    "pip install -r requirements.txt"
+]
 
 [phases.build]
 cmds = ["python manage.py collectstatic --noinput"]
