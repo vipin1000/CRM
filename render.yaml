@@ -17,4 +17,6 @@ services:
       - key: DJANGO_ENV
         value: production
       - key: ALLOWED_HOSTS
-        value: .onrender.com 
+        value: .onrender.com
+      - key: DJANGO_APP
+        value: Website 
