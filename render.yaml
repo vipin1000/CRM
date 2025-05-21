@@ -11,7 +11,7 @@ services:
       - key: PYTHON_VERSION
         value: 3.11.0
       - key: DJANGO_SETTINGS_MODULE
-        value: CRM.settings
+        value: CRM.CRM.settings
       - key: PYTHONPATH
         value: /opt/render/project/src
       - key: DJANGO_ENV
