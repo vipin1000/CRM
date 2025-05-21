@@ -19,13 +19,10 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy project
-COPY . /app/
-
-# Set the correct working directory
-WORKDIR /app/CRM
+COPY . .
 
 # Collect static files
-RUN python ../manage.py collectstatic --noinput
+RUN python manage.py collectstatic --noinput
 
 # Run gunicorn
 CMD gunicorn CRM.wsgi:application --bind 0.0.0.0:$PORT 
