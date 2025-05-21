@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: crm
+    env: python
+    buildCommand: |
+      python -m pip install --upgrade pip
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+    startCommand: gunicorn CRM.CRM.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: DJANGO_SETTINGS_MODULE
+        value: CRM.settings
+      - key: PYTHONPATH
+        value: /opt/render/project/src
+      - key: DJANGO_ENV
+        value: production
+      - key: ALLOWED_HOSTS
+        value: .onrender.com 
