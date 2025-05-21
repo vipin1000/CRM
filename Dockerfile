@@ -12,7 +12,6 @@ RUN apt-get update && apt-get install -y \
     default-libmysqlclient-dev \
     build-essential \
     pkg-config \
-    netcat-traditional \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
@@ -25,25 +24,17 @@ COPY . .
 # Set the correct working directory
 WORKDIR /app/CRM
 
-# Create wait-for-db script
-RUN echo '#!/bin/bash\n\
-set -e\n\
-\n\
-host="$1"\n\
-shift\n\
-cmd="$@"\n\
-\n\
-until nc -z -v -w30 "$host" 3306\n\
-do\n\
-  echo "Waiting for database connection..."\n\
-  sleep 5\n\
-done\n\
-\n\
-echo "Database is up - executing command"\n\
-exec $cmd' > /app/wait-for-db.sh && chmod +x /app/wait-for-db.sh
+# Debug: List directory contents
+RUN ls -la
+
+# Debug: Check Python path
+RUN which python
+
+# Debug: Check if manage.py exists
+RUN test -f manage.py && echo "manage.py exists" || echo "manage.py not found"
 
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
-# Run gunicorn with wait-for-db
-CMD ["/bin/bash", "-c", "/app/wait-for-db.sh $MYSQLHOST python manage.py migrate && gunicorn CRM.wsgi:application --bind 0.0.0.0:$PORT"] 
+# Run gunicorn
+CMD gunicorn CRM.wsgi:application --bind 0.0.0.0:$PORT 
