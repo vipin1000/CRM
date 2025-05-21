@@ -1,1 +1,1 @@
-web: cd CRM && gunicorn CRM.wsgi:application
+web: gunicorn CRM.CRM.wsgi:application
