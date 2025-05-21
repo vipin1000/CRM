@@ -6,7 +6,7 @@ services:
       python -m pip install --upgrade pip
       pip install -r requirements.txt
       python manage.py collectstatic --noinput
-    startCommand: gunicorn CRM.CRM.wsgi:application --bind 0.0.0.0:$PORT
+    startCommand: gunicorn CRM.CRM.wsgi:application --bind 0.0.0.0:$PORT --reload
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
