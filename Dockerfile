@@ -21,6 +21,18 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project
 COPY . .
 
+# Set the correct working directory
+WORKDIR /app/CRM
+
+# Debug: List directory contents
+RUN ls -la
+
+# Debug: Check Python path
+RUN which python
+
+# Debug: Check if manage.py exists
+RUN test -f manage.py && echo "manage.py exists" || echo "manage.py not found"
+
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
