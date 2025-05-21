@@ -34,7 +34,6 @@ google-auth==2.40.1
 google-auth-httplib2==0.2.0
 google-auth-oauthlib==1.2.0
 googleapis-common-protos==1.70.0
-googletrans==4.0.0rc1
 greenlet==3.1.1
 gTTS==2.5.4
 gunicorn==23.0.0
