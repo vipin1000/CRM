@@ -1,5 +1,5 @@
 Django==5.1.6
-mysqlclient @ https://files.pythonhosted.org/packages/50/09/efc1e1f0477c4f0f1f3b6f0c9c5d8c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0/mysqlclient-2.2.7-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+mysqlclient==2.2.7
 Pillow==11.1.0
 python-dotenv==1.0.1
 whitenoise==6.9.0
