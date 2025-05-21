@@ -3,9 +3,14 @@ services:
     name: crm
     env: python
     buildCommand: |
+      cd CRM
       pip install -r requirements.txt
       python manage.py collectstatic --noinput
-    startCommand: chmod +x start.sh && ./start.sh
+    startCommand: |
+      cd CRM
+      export PYTHONPATH=$PYTHONPATH:/opt/render/project/src
+      export DJANGO_SETTINGS_MODULE=CRM.settings
+      gunicorn CRM.wsgi:application --bind 0.0.0.0:$PORT
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
