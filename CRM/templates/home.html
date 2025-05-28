@@ -1,60 +1,56 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <div class="container" "col-md-6 offset-md-3">
+  <div class="container">
     {% if user.is_authenticated%}
-
     <h1 class="text-center mt-5">Welcome {{user.username}}</h1>
     <h1 class="text-left mt-5">Records</h1>
-  </br>
-  <table class="table table-striped table-hover table-bordered">
-    <thead class = "table-dark">
-      <tr>
-        <th scope="col">Id</th>
-        <th scope="col">Name</th>
-        <th scope="col">Email</th>
-        <th scope="col">Phone</th>
-        <th scope="col">Creted At</th>
-        <th scope="col">City</th>
-        <th scope="col">state</th>
-      
-      </tr>
-    </thead>
-    <tbody>
-    {% if records %}
-    {% for record in records %}
-    <tr>
-      <td> <a href="{% url "record" record.id %}">{{record.id}} </td>
-      <td>{{record.first_name}}  {{record.last_name}}</td>
-        <td>{{record.email}}</td>
-          <td>{{record.phone}}</td>
+    </br>
+    <div class="table-responsive">
+      <table class="table table-striped table-hover table-bordered">
+        <thead class="table-dark">
+          <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Name</th>
+            {% comment %} <th scope="col">Email</th>
+            <th scope="col">Phone</th>
+            <th scope="col">Created At</th>
+            <th scope="col">City</th>
+            <th scope="col">State</th> {% endcomment %}
+          </tr>
+        </thead>
+        <tbody>
+          {% if records %}
+          {% for record in records %}
+          <tr>
+            <td><a href="{% url 'record' record.id %}">{{record.id}}</a></td>
+            <td>{{record.first_name}} {{record.last_name}}</td>
+            {% comment %} <td>{{record.email}}</td>
+            <td>{{record.phone}}</td>
             <td>{{record.created_at}}</td>
-              <td>{{record.city}}</td>
-                <td>{{record.state}}</td>
-  </tr>
-    {% endfor %}
-    {% endif %}
-</tbody>
-</table>
-    
-    
+            <td>{{record.city}}</td>
+            <td>{{record.state}}</td> {% endcomment %}
+          </tr>
+          {% endfor %}
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
     {% else %}
-
     <h1 class="text-center mt-5">LOG IN</h1>
     <p class="text-center">This is a CRM Form</p>
-    <form method= 'POST' action ='{% url 'home'%}'>
-        {% csrf_token %}
-        <div class="mb-3">
-          <input type="text" class="form-control"name="username" placeholder="Enter username" required>
-        </div>
-
-
-        <div class="mb-3">
-          <input type="password" class="form-control" name="password" placeholder="Password" required>
-        </div>
+    <form method='POST' action='{% url "home" %}'>
+      {% csrf_token %}
+      <div class="mb-3">
+        <input type="text" class="form-control" name="username" placeholder="Enter username" required>
+      </div>
+      <div class="mb-3">
+        <input type="password" class="form-control" name="password" placeholder="Password" required>
+      </div>
       </br>
-        <button type="submit" class="btn btn-secondary">log in</button>
+      <button type="submit" class="btn btn-secondary">Log in</button>
     </form>
     {% endif %}
+    <a href="{% url 'all_records' %}" class="btn btn-secondary">All Records</a>
   </div>
-  {% endblock %}
+{% endblock %}

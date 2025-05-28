@@ -43,6 +43,8 @@ class Addrecords(forms.ModelForm):
     city = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"City", "class":"form-control"}), label="")
     state = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"State", "class":"form-control"}), label="")
     Pincode = forms.IntegerField(required=True,widget=forms.widgets.TextInput(attrs={"placeholder":"Pincode", "class":"form-control"}), label="")
+    Profile = forms.ImageField(required=True,widget=forms.widgets.FileInput(attrs={"class":"form-control","accept": "image/*"}),label="Profile Picture"
+    )
     
     
     

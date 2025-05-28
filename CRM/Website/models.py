@@ -1,5 +1,8 @@
 from django.db import models
+import os
 
+def get_upload_path(instance, filename):
+	return os.path.join('profile_pics', str(instance.id), filename)
 # Create your models here.
 class Record(models.Model):
 	created_at = models.DateTimeField(auto_now_add=True)
@@ -11,6 +14,7 @@ class Record(models.Model):
 	city =  models.CharField(max_length=50)
 	state =  models.CharField(max_length=50)
 	Pincode =  models.CharField(max_length=6)
+	Profile = models.ImageField(upload_to=get_upload_path, null=True, blank=True)
 
 	def __str__(self):
 		return(f"{self.first_name} {self.last_name}")

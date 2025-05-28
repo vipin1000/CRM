@@ -9,6 +9,11 @@
 		{{ customer_record.last_name }}</strong>
   </div>
   <div class="card-body">
+    {% if customer_record.Profile %}
+      <div class="text-center mb-4">
+        <img src="{{ customer_record.Profile.url }}" alt="Profile Picture" class="img-fluid rounded" style="max-width: 200px;">
+      </div>
+    {% endif %}
 
 
 

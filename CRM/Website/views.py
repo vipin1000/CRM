@@ -24,6 +24,13 @@ def home(request):
     return render(request, 'home.html', {'records':records})
 
 
+def all_records(request):
+    records=Record.objects.all()
+    return render(request, 'all_records.html', {'records':records})
+
+
+
+
 def logout_user(request):
     logout(request)
     messages.success(request, 'Bye Bye, You are logged out')
@@ -32,7 +39,7 @@ def logout_user(request):
 
 
 def register_user(request):
-    if request.method =='POST':
+    if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
             form.save()
@@ -41,7 +48,7 @@ def register_user(request):
             user = authenticate(request, username=username, password=password)
             login(request, user)
             messages.success(request, 'You are Registered')
-            return render(request,'home.html')
+            return redirect('home')
         else:
             form = SignUpForm()
             return render(request, 'register.html', {'form':form})
@@ -49,48 +56,104 @@ def register_user(request):
     return render(request, 'register.html')
         
 def add_record(request):
-	form = Addrecords(request.POST or None)
-	if request.user.is_authenticated:
-		if request.method == "POST":
-			if form.is_valid():
-				form.save()
-				messages.success(request, "Record Added...")
-				return redirect('home')
-		return render(request, 'addrecord.html', {'form':form})
-	else:
-		messages.success(request, "You Must Be Logged In...")
-		return redirect('home')
-	
+	# form = Addrecords(request.POST or None)
+	# if request.user.is_authenticated:
+	# 	if request.method == "POST":
+	# 		if form.is_valid():
+	# 			form.save()
+	# 			messages.success(request, "Record Added...")
+	# 			return redirect('home')
+	# 	return render(request, 'addrecord.html', {'form':form})
+	# else:
+	# 	messages.success(request, "You Must Be Logged In...")
+	# 	return redirect('home')
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            form = Addrecords(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Record Added...")
+                return redirect('home')
+            else:
+                messages.error(request, "Please correct the errors below.")
+        else:
+            form = Addrecords()
+        return render(request, 'addrecord.html', {'form': form})
+    else:
+        messages.error(request, "You Must Be Logged In...")
+        return redirect('home')	
 
 def customer_record(request, pk):
     if request.user.is_authenticated:
-        customer_record=Record.objects.get(id=pk)
-        return render(request, 'record.html', {'customer_record':customer_record})    
+        # Get the search ID from query parameters
+        search_id = request.GET.get('pk')
+        if search_id:
+            try:
+                customer_record = Record.objects.get(id=search_id)
+                messages.success(request, "👍👍👍👍👍👍👍")
+                return render(request, 'record.html', {'customer_record': customer_record})
+            except Record.DoesNotExist:
+                messages.error(request, "☠️☠️☠️☠️☠️☠️☠️")
+                return redirect('home')
+        else:
+            # If no search ID, use the pk from URL
+            try:
+                customer_record = Record.objects.get(id=pk)
+                return render(request, 'record.html', {'customer_record': customer_record})
+            except Record.DoesNotExist:
+                messages.error(request, "☠️☠️☠️☠️☠️☠️☠️")
+                return redirect('home')
     else:
-        messages.success(request, "You Must Be Logged In...")
-        return render(request, 'home.html')
-      
+        messages.error(request, "You Must Be Logged In...")
+        return redirect('home')
 
 def delete_record(request, pk):
     if request.user.is_authenticated:
-        record = Record.objects.get(id=pk)
-        record.delete()
-        messages.success(request, "Record Deleted...")
-        return redirect('home')
+        try:
+            record = Record.objects.get(id=pk)
+            record.delete()
+            messages.success(request, "Record Deleted...")
+            return redirect('home')
+        except Record.DoesNotExist:
+            messages.error(request, "Record not found...")
+            return redirect('home')
     else:
-        messages.success(request, "You Must Be Logged In To Do That...")
+        messages.error(request, "You Must Be Logged In To Do That...")
         return redirect('home')
     
 
 def update_record(request, pk):
-	if request.user.is_authenticated:
-		current_record = Record.objects.get(id=pk)
-		form = Addrecords(request.POST or None, instance=current_record)
-		if form.is_valid():
-			form.save()
-			messages.success(request, "Record Has Been Updated!")
-			return redirect('home')
-		return render(request, 'update_record.html', {'form':form})
-	else:
-		messages.success(request, "You Must Be Logged In...")
-		return redirect('home')    
+    if request.user.is_authenticated:
+        current_record = Record.objects.get(id=pk)
+        if request.method == "POST":
+            form = Addrecords(request.POST, request.FILES, instance=current_record)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Record Has Been Updated!")
+                return redirect('home')
+            else:
+                messages.error(request, "Please correct the errors below.")
+        else:
+            form = Addrecords(instance=current_record)
+        return render(request, 'update_record.html', {'form': form})
+    else:
+        messages.error(request, "You Must Be Logged In...")
+        return redirect('home')
+
+def search_user(request, pk=None):
+    if not request.user.is_authenticated:
+        messages.error(request, "You Must Be Logged In...")
+        return redirect('home')
+    
+    # If pk is provided in URL, redirect directly to record
+    if pk is not None:
+        try:
+            record = Record.objects.get(id=pk)
+            return redirect('record', pk=record.id)
+        except Record.DoesNotExist:
+            messages.error(request, "Record not found.")
+            return redirect('home')
+            
+    return redirect('home')
+    
+                     

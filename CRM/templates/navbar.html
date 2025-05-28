@@ -21,10 +21,14 @@
             <a class="nav-link" href='{% url "home" %}'>Login</a>
           {% endif %}
         </ul>
-        {% comment %} <form class="d-flex" role="search">
-          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+       
+        <form method='GET' action="{% url 'record' pk=1 %}">
+        {% csrf_token %}
+        <div class="mb-3">
+          <input type="text" class="form-control" name="pk" placeholder="Enter ID" required>
+        </div>
           <button class="btn btn-outline-success" type="submit">Search</button>
-        </form> {% endcomment %}
+        </form>
       </div>
     </div>
   </nav>
