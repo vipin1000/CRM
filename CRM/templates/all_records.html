@@ -36,7 +36,7 @@
     {% endif %}
 </tbody>
 </table>
-    
+    <a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
     
     {% else %}
 
@@ -56,6 +56,6 @@
         <button type="submit" class="btn btn-secondary">log in</button>
     </form>
     {% endif %}
-    <a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
+    
   </div>
   {% endblock %}

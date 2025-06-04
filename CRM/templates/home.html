@@ -35,6 +35,10 @@
           {% endif %}
         </tbody>
       </table>
+    </br>
+  
+    </br>
+    <a href="{% url 'all_records' %}" class="btn btn-secondary">All Records</a>
     </div>
     {% else %}
     <h1 class="text-center mt-5">LOG IN</h1>
@@ -51,6 +55,7 @@
       <button type="submit" class="btn btn-secondary">Log in</button>
     </form>
     {% endif %}
-    <a href="{% url 'all_records' %}" class="btn btn-secondary">All Records</a>
+    
   </div>
+  
 {% endblock %}

@@ -14,6 +14,7 @@
       .alert {
         text-align: center;
         font-size: 1.2rem;
+        transition: opacity 1s ease-out; /* Smooth fade-out effect */
       }
       .table-responsive {
         width: 100%;
@@ -62,15 +63,33 @@
   </br>
     {% if messages %}
     {% for message in messages %}
-    <div class="alert alert-warning alert-dismissible fade show w-50 mx-auto" role="alert">
+    {% comment %} <div class="alert alert-success alert-warning alert-dismissible fade show w-50 mx-auto" role="alert">
       <span class="emoji">{{message}}</span>
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
+
+</div> {% endcomment %}
+<div class="alert alert-success alert-dismissible fade show w-50 mx-auto" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
     {% endfor %}
     {% endif %}
 
     {% block content %}
     {% endblock %}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+    </script>
+       <script>
+       // Automatically fade out messages after 4 seconds
+       setTimeout(() => {
+        const messages = document.querySelectorAll('.alert');
+        messages.forEach(message => {
+            message.style.opacity = '0'; // Gradually reduce opacity
+            setTimeout(() => {
+                message.style.display = 'none'; // Hide after fade-out
+            }, 1000); // Match the transition duration
+        });
+    }, 3000);
+    </script>
   </body>
 </html>

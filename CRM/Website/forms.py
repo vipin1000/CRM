@@ -2,11 +2,19 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import *
+from django.core.exceptions import ValidationError
+from django.core import validators
+
+
+
+def starts_with_capital_M(value):
+	if not value.startswith("M"):
+		return ValidationError("Please define your Honorifics")
 
 class SignUpForm(UserCreationForm):
     email=forms.EmailField(label="",widget=forms.TextInput(attrs={'class':'form-control','placeholder':'Email Address'}))
     first_name=forms.CharField(label="",max_length=50,widget=forms.TextInput(attrs={'class':'form-control','placeholder':'first name'}))
-    last_name=forms.CharField(label="",max_length=50,widget=forms.TextInput(attrs={'class':'form-control','placeholder':'last name'}))
+    last_name=forms.CharField(label="",required=False,max_length=50,widget=forms.TextInput(attrs={'class':'form-control','placeholder':'last name'}))
 
 
     class Meta:
@@ -35,18 +43,15 @@ class SignUpForm(UserCreationForm):
 
 
 class Addrecords(forms.ModelForm):
-    first_name = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"First Name", "class":"form-control"}), label="")
-    last_name = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"Last Name", "class":"form-control"}), label="")
+    first_name = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"First Name", "class":"form-control"}), label="Start name with 'Mr' or 'Ms' ",validators=[starts_with_capital_M])
+    last_name = forms.CharField(required=False, widget=forms.widgets.TextInput(attrs={"placeholder":"Last Name", "class":"form-control"}), label="")
     email = forms.EmailField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"Email", "class":"form-control"}), label="")
     phone = forms.IntegerField(required=True,widget=forms.widgets.TextInput(attrs={"placeholder":"Phone", "class":"form-control"}), label="")
     address = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"Address", "class":"form-control"}), label="")
     city = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"City", "class":"form-control"}), label="")
     state = forms.CharField(required=True, widget=forms.widgets.TextInput(attrs={"placeholder":"State", "class":"form-control"}), label="")
     Pincode = forms.IntegerField(required=True,widget=forms.widgets.TextInput(attrs={"placeholder":"Pincode", "class":"form-control"}), label="")
-    Profile = forms.ImageField(required=True,widget=forms.widgets.FileInput(attrs={"class":"form-control","accept": "image/*"}),label="Profile Picture"
-    )
-    
-    
+    Profile = forms.ImageField(required=True,widget=forms.widgets.FileInput(attrs={"class":"form-control","accept": "image/*"}),label="Profile Picture")
     
     
     class Meta:

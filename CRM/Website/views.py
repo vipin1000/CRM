@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.utils import timezone
 from .forms import *
 from .models import Record
 
@@ -15,8 +16,10 @@ def home(request):
 
         if user is not None:
             login(request, user)
+            records=Record.objects.all()
+            # Set session data
             messages.success(request, 'There you GOOO!! . You are now logged in')
-            return render(request, 'home.html')
+            return render(request, 'home.html',{'records':records})
         else:    
             messages.error(request, '!!Holy Cow!! Wrong credentials.')
             return render(request, 'home.html')
@@ -32,13 +35,25 @@ def all_records(request):
 
 
 def logout_user(request):
+    if request.user.is_authenticated:
+        # Clear all session data
+        request.session.flush()
+        request.session.clear()
+        # Delete the session cookie
+        if 'sessionid' in request.COOKIES:
+            response = render(request, 'home.html')
+            response.delete_cookie('sessionid')
+            logout(request)
+            messages.success(request, 'Bye Bye, You are logged out')
+            return response
     logout(request)
     messages.success(request, 'Bye Bye, You are logged out')
-    return render(request,'home.html')  
+    return render(request, 'home.html')
 
 
 
 def register_user(request):
+    form = SignUpForm()
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
@@ -53,7 +68,7 @@ def register_user(request):
             form = SignUpForm()
             return render(request, 'register.html', {'form':form})
       
-    return render(request, 'register.html')
+    return render(request, 'register.html',{'form':form})
         
 def add_record(request):
 	# form = Addrecords(request.POST or None)
@@ -90,10 +105,10 @@ def customer_record(request, pk):
         if search_id:
             try:
                 customer_record = Record.objects.get(id=search_id)
-                messages.success(request, "👍👍👍👍👍👍👍")
+                messages.success(request, "✅ User Found ✅")
                 return render(request, 'record.html', {'customer_record': customer_record})
             except Record.DoesNotExist:
-                messages.error(request, "☠️☠️☠️☠️☠️☠️☠️")
+                messages.error(request, "❌ !!No User found!! ❌")
                 return redirect('home')
         else:
             # If no search ID, use the pk from URL
@@ -101,7 +116,7 @@ def customer_record(request, pk):
                 customer_record = Record.objects.get(id=pk)
                 return render(request, 'record.html', {'customer_record': customer_record})
             except Record.DoesNotExist:
-                messages.error(request, "☠️☠️☠️☠️☠️☠️☠️")
+                messages.error(request, "❌ !!No User found!! ❌")
                 return redirect('home')
     else:
         messages.error(request, "You Must Be Logged In...")

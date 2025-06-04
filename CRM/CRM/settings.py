@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Website',
+    'django_extensions',
     'whitenoise.runserver_nostatic',
 ]
 
@@ -40,6 +41,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'Website.middleware.SessionManagementMiddleware',
 ]
 
 ROOT_URLCONF = 'CRM.urls'
@@ -77,6 +79,15 @@ DATABASES = {
     }
 }
 
+# Database
+# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -129,6 +140,12 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Session settings
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_AGE = 1800  # 0.5 hour in seconds
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Session will expire when browser is closed
+SESSION_SAVE_EVERY_REQUEST = True
 
 # Security settings
 if not DEBUG:

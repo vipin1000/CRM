@@ -22,8 +22,7 @@
           {% endif %}
         </ul>
        
-        <form method='GET' action="{% url 'record' pk=1 %}">
-        {% csrf_token %}
+        <form method='GET' action="{% url 'record' pk=0 %}">
         <div class="mb-3">
           <input type="text" class="form-control" name="pk" placeholder="Enter ID" required>
         </div>
