@@ -4,6 +4,9 @@ from django.contrib import messages
 from django.utils import timezone
 from .forms import *
 from .models import Record
+from .utils import generate_verification_code, send_verification_email
+from django.contrib.auth.models import User
+from django.core.cache import cache
 
 # Create your views here.
 def home(request):
@@ -36,40 +39,105 @@ def all_records(request):
 
 def logout_user(request):
     if request.user.is_authenticated:
-        # Clear all session data
-        request.session.flush()
-        request.session.clear()
-        # Delete the session cookie
-        if 'sessionid' in request.COOKIES:
-            response = render(request, 'home.html')
-            response.delete_cookie('sessionid')
-            logout(request)
-            messages.success(request, 'Bye Bye, You are logged out')
-            return response
-    logout(request)
-    messages.success(request, 'Bye Bye, You are logged out')
-    return render(request, 'home.html')
+        # # Clear all session data
+        # request.session.flush()
+        # # Delete the session cookie
+        # if 'sessionid' in request.COOKIES:
+        #     response = render(request, 'home.html')
+        #     response.delete_cookie('sessionid')
+        #     logout(request)
+        #     messages.success(request, 'Bye Bye, You are logged out')
+        #     return response
+        logout(request)
+        messages.success(request, 'Bye Bye, You are logged out')
+        return render(request, 'home.html')
+    return render(request,"home.html")
 
 
+
+def verify_email_step(request):
+    """First step of registration: Email verification"""
+    email_form = EmailVerificationForm()
+    otp_form = OTPVerificationForm()
+    
+    if request.method == 'POST':
+        if 'email' in request.POST:
+            # First step: Send OTP
+            email_form = EmailVerificationForm(request.POST)
+            if email_form.is_valid():
+                email = email_form.cleaned_data['email']
+                # Check if email already exists
+                if User.objects.filter(email=email).exists():
+                    messages.error(request, 'This email is already registered.')
+                    return render(request, 'verify_email_step.html', {
+                        'email_form': email_form,
+                        'otp_form': otp_form,
+                        'otp_sent': False
+                    })
+                
+                # Generate and send OTP
+                verification_code = generate_verification_code()
+                if send_verification_email(email, verification_code):
+                    # Store email and OTP in session
+                    request.session['pending_email'] = email
+                    request.session['verification_code'] = verification_code
+                    # messages.success(request, 'Verification code sent to your email.')
+                    return render(request, 'verify_email_step.html', {
+                        'email_form': email_form,
+                        'otp_form': otp_form,
+                        'otp_sent': True,
+                        'email': email
+                    })
+                else:
+                    messages.error(request, 'Failed to send verification code. Please try again.')
+        else:
+            # Second step: Verify OTP
+            otp_form = OTPVerificationForm(request.POST)
+            if otp_form.is_valid():
+                entered_otp = otp_form.cleaned_data['otp']
+                stored_otp = request.session.get('verification_code')
+                email = request.session.get('pending_email')
+                
+                if entered_otp == stored_otp:
+                    # OTP is correct, proceed to registration form
+                    request.session['email_verified'] = True
+                    return redirect('register')
+                else:
+                    messages.error(request, 'Invalid verification code. Please try again.')
+    
+    return render(request, 'verify_email_step.html', {
+        'email_form': email_form,
+        'otp_form': otp_form,
+        'otp_sent': False
+    })
 
 def register_user(request):
+    """Second step of registration: User details and password"""
+    # Check if email is verified
+    if not request.session.get('email_verified'):
+        messages.error(request, 'Please verify your email first.')
+        return redirect('verify_email_step')
+    
     form = SignUpForm()
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password1')
-            user = authenticate(request, username=username, password=password)
+            # Set the email from the verified email
+            form.instance.email = request.session.get('pending_email')
+            user = form.save()
+            
+            # Clear session data
+            request.session.pop('pending_email', None)
+            request.session.pop('verification_code', None)
+            request.session.pop('email_verified', None)
+            
+            # Log the user in
             login(request, user)
-            messages.success(request, 'You are Registered')
+            messages.success(request, 'Registration successful!')
             return redirect('home')
-        else:
-            form = SignUpForm()
-            return render(request, 'register.html', {'form':form})
-      
-    return render(request, 'register.html',{'form':form})
-        
+    
+    return render(request, 'register.html', {'form': form})
+
 def add_record(request):
 	# form = Addrecords(request.POST or None)
 	# if request.user.is_authenticated:
@@ -82,9 +150,9 @@ def add_record(request):
 	# else:
 	# 	messages.success(request, "You Must Be Logged In...")
 	# 	return redirect('home')
+    form = Addrecords(request.POST, request.FILES)
     if request.user.is_authenticated:
-        if request.method == "POST":
-            form = Addrecords(request.POST, request.FILES)
+        if request.method == "POST": 
             if form.is_valid():
                 form.save()
                 messages.success(request, "Record Added...")

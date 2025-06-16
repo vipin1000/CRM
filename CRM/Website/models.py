@@ -12,6 +12,9 @@ def starts_with_capital_M(value):
 def get_upload_path(instance, filename):
 	return os.path.join('profile_pics', str(instance.id), filename)
 # Create your models here.
+
+
+
 class Record(models.Model):
 	created_at = models.DateTimeField(auto_now_add=True)
 	first_name = models.CharField(max_length=50,validators=[starts_with_capital_M])
